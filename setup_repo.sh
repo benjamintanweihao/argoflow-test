@@ -36,7 +36,7 @@ read -p 'Email: ' EMAIL
 read -p 'Username: ' USERNAME
 read -p 'First name (for Kubeflow account): ' FIRSTNAME
 read -p 'Last name (for Kubeflow account): ' LASTNAME
-read -s 'Password (for Kubeflow login): ' ADMIN_PASS
+read -p 'Password (for Kubeflow login): ' ADMIN_PASS
 
 ADMIN_PASS_DEX=$(python3 -c "from passlib.hash import bcrypt; import secrets; print(bcrypt.using(rounds=12, ident='2y').hash(\"${ADMIN_PASS}\"))")
 
@@ -48,7 +48,7 @@ yq eval -j -P ".users[0].username = \"${USERNAME}\" | .users[0].email = \"${EMAI
 # Monitoring setup
 
 read -p 'Grafana Admin Username: ' GRAFANA_ADMIN_USERNAME
-read -s 'Grafana Admin Password: ' GRAFANA_ADMIN_PASS
+read -p 'Grafana Admin Password: ' GRAFANA_ADMIN_PASS
 
 kubectl create secret generic -n monitoring grafana-admin-secret --from-literal=admin-user=${GRAFANA_ADMIN_USERNAME} --from-literal=admin-password=${GRAFANA_ADMIN_PASS} --dry-run=client -o yaml | kubeseal | yq eval -P > ${DISTRIBUTION_PATH}/monitoring-resources/grafana-admin-secret.yaml
 
@@ -87,7 +87,7 @@ select yn in "Yes" "No"; do
     case $yn in
         Yes )
           read -p 'Repository HTTPS Username: ' REPO_HTTPS_USERNAME
-          read -s 'Repository HTTPS Password: ' REPO_HTTPS_PASSWORD
+          read -p 'Repository HTTPS Password: ' REPO_HTTPS_PASSWORD
           kubectl create secret generic -n argocd git-repo-secret --from-literal=HTTPS_USERNAME=${REPO_HTTPS_USERNAME} --from-literal=HTTPS_PASSWORD=${REPO_HTTPS_PASSWORD} --dry-run=client -o yaml | kubeseal | yq eval -P > ${DISTRIBUTION_PATH}/argocd/overlays/private-repo/secret.yaml
           break;;
         No ) break;;
